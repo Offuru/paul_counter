@@ -1,0 +1,23 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo "Logging into ECR"
+      - aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 022499048865.dkr.ecr.eu-west-1.amazonaws.com
+      - echo "Succesfully logged into ECR"
+  build:
+    commands:
+      - echo "Building docker image"
+      - docker build -t andrei-counter .
+      - docker tag andrei-counter:latest 022499048865.dkr.ecr.eu-west-1.amazonaws.com/andrei-counter:latest
+      - echo "Succesfully built docker image"
+  post_build:
+    commands:
+      - echo "Pushing docker image to ECR"
+      - docker push 022499048865.dkr.ecr.eu-west-1.amazonaws.com/andrei-counter:latest
+      - echo "Succesfully pushed docker image to ECR"
+
+artifacts:
+  files:
+    - "**/*"
